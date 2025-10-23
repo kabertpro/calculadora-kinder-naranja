@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Sumas para Niños</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 50%, #0D47A1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 3em;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        .star {
+            display: inline-block;
+            font-size: 2.5em;
+            margin: 0 15px;
+            animation: bounce 0.6s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-family: 'Comic Sans MS', cursive;
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FFD54F 0%, #FBC02D 100%);
+            color: #0D47A1;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
+        }
+
+        .tab-btn.inactive {
+            background: white;
+            color: #1976D2;
+            transform: scale(1);
+        }
+
+        .tab-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Puntuación */
+        .score-box {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD54F 0%, #FBC02D 100%);
+            color: #0D47A1;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
+        }
+
+        /* Contenido */
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        /* CALCULADORA */
+        .calculadora-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .display {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .resultado-display {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: right;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .operacion-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            min-height: 30px;
+        }
+
+        .resultado-numero {
+            font-size: 2em;
+        }
+
+        .mensaje {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mensaje.correcto {
+            color: #4CAF50;
+        }
+
+        .botones-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (orientation: landscape) and (max-width: 900px) {
+            .botones-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+                padding: 20px;
+            }
+        }
+
+        .btn-numero, .btn-operacion, .btn-igual, .btn-limpiar {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.8em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-numero {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            color: white;
+            font-size: 2em;
+        }
+
+        .btn-numero:hover, .btn-numero:active {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(30, 136, 229, 0.4);
+        }
+
+        .btn-operacion {
+            background: linear-gradient(135deg, #FFD54F 0%, #FBC02D 100%);
+            color: #0D47A1;
+            font-size: 1.8em;
+        }
+
+        .btn-operacion:hover, .btn-operacion:active {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
+        }
+
+        .btn-igual {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .btn-igual:hover, .btn-igual:active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(67, 160, 71, 0.4);
+        }
+
+        .btn-limpiar {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .btn-limpiar:hover, .btn-limpiar:active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.4);
+        }
+
+        /* TIENDA */
+        .tienda-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .producto {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .producto:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .producto-emoji {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .producto-nombre {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #0D47A1;
+            margin-bottom: 10px;
+        }
+
+        .producto-precio {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .btn-agregar {
+            background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive;
+            width: 100%;
+        }
+
+        .btn-agregar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(67, 160, 71, 0.4);
+        }
+
+        /* Carrito */
+        .carrito {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 20px;
+        }
+
+        .carrito-titulo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0D47A1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .carrito-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .carrito-item {
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .item-nombre {
+            font-weight: bold;
+            color: #0D47A1;
+        }
+
+        .item-cantidad {
+            display: flex;
+            gap: 10px;
+            margin: 8px 0;
+            align-items: center;
+        }
+
+        .cantidad-btn {
+            background: #1976D2;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .cantidad-btn:hover {
+            background: #0D47A1;
+        }
+
+        .cantidad-input {
+            width: 40px;
+            text-align: center;
+            border: 2px solid #42A5F5;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .btn-eliminar {
+            background: #EF5350;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .btn-eliminar:hover {
+            background: #E53935;
+        }
+
+        .carrito-total {
+            background: linear-gradient(135deg, #FFD54F 0%, #FBC02D 100%);
+            color: #0D47A1;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .btn-comprar {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            width: 100%;
+            transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        .btn-comprar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.4);
+        }
+
+        .carrito-vacio {
+            text-align: center;
+            color: #999;
+            font-size: 1.1em;
+            padding: 20px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .star {
+                font-size: 1.5em;
+                margin: 0 10px;
+            }
+
+            .tienda-container {
+                grid-template-columns: 1fr;
+            }
+
+            .carrito {
+                position: static;
+            }
+
+            .tab-btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+
+            .resultado-display {
+                font-size: 1.5em;
+                padding: 15px 20px;
+                min-height: 100px;
+            }
+
+            .operacion-display {
+                font-size: 1em;
+            }
+
+            .resultado-numero {
+                font-size: 1.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            .star {
+                font-size: 1.2em;
+                margin: 0 5px;
+            }
+
+            .productos-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .score {
+                font-size: 1.4em;
+                padding: 15px 30px;
+            }
+
+            .botones-grid {
+                gap: 10px;
+                padding: 20px;
+            }
+
+            .btn-numero, .btn-operacion, .btn-igual, .btn-limpiar {
+                padding: 15px;
+                font-size: 1.5em;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .calculadora-container {
+                max-width: 600px;
+            }
+
+            .display {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .resultado-display {
+                min-height: 80px;
+                padding: 10px 15px;
+            }
+
+            .operacion-display {
+                font-size: 0.9em;
+                min-height: 20px;
+            }
+
+            .resultado-numero {
+                font-size: 1.5em;
+            }
+
+            .botones-grid {
+                padding: 15px;
+                gap: 8px;
+            }
+
+            .btn-numero, .btn-operacion {
+                padding: 10px;
+                font-size: 1.3em;
+            }
+
+            .btn-igual, .btn-limpiar {
+                padding: 10px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="star">⭐</span> Mi Calculadora de Sumas <span class="star">⭐</span></h1>
+        </header>
+
+        <div class="score-box">
+            <div class="score">🏆 Puntos: <span id="puntos">0</span></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cambiarTab('calculadora')">🧮 Calculadora</button>
+            <button class="tab-btn inactive" onclick="cambiarTab('tienda')">🛒 Tienda</button>
+        </div>
+
+        <!-- CALCULADORA -->
+        <div id="calculadora" class="content active">
+            <div class="calculadora-container">
+                <div class="display">
+                    <div class="resultado-display">
+                        <div class="operacion-display" id="operacionDisplay"></div>
+                        <div class="resultado-numero" id="display">0</div>
+                    </div>
+                    <div class="mensaje" id="mensaje"></div>
+                </div>
+
+                <div class="botones-grid">
+                    <button class="btn-numero" onclick="agregarNumero(7)">7</button>
+                    <button class="btn-numero" onclick="agregarNumero(8)">8</button>
+                    <button class="btn-numero" onclick="agregarNumero(9)">9</button>
+                    <button class="btn-operacion" onclick="suma()">➕</button>
+
+                    <button class="btn-numero" onclick="agregarNumero(4)">4</button>
+                    <button class="btn-numero" onclick="agregarNumero(5)">5</button>
+                    <button class="btn-numero" onclick="agregarNumero(6)">6</button>
+                    <button class="btn-operacion" onclick="restar()">➖</button>
+
+                    <button class="btn-numero" onclick="agregarNumero(1)">1</button>
+                    <button class="btn-numero" onclick="agregarNumero(2)">2</button>
+                    <button class="btn-numero" onclick="agregarNumero(3)">3</button>
+                    <button class="btn-operacion" onclick="multiplicar()">✖️</button>
+
+                    <button class="btn-numero" onclick="agregarNumero(0)">0</button>
+                    <button class="btn-igual" onclick="calcular()">=</button>
+                    <button class="btn-limpiar" onclick="limpiar()">🗑️ Limpiar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIENDA -->
+        <div id="tienda" class="content">
+            <div class="tienda-container">
+                <div class="productos-grid" id="productosGrid"></div>
+                <div class="carrito">
+                    <div class="carrito-titulo">🛒 Mi Carrito</div>
+                    <div class="carrito-items" id="cartItems"></div>
+                    <div class="carrito-total">Total: <span id="totalPrecio">Bs. 0</span></div>
+                    <button class="btn-comprar" onclick="comprar()">Comprar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables calculadora
+        let display = '0';
+        let operacionCompleta = '';
+        let ultimoResultado = null;
+        let puntos = 0;
+
+        // Variables tienda
+        let carrito = [];
+        const productos = [
+            { id: 1, nombre: 'Manzana', precio: 5, emoji: '🍎' },
+            { id: 2, nombre: 'Banana', precio: 3, emoji: '🍌' },
+            { id: 3, nombre: 'Fresa', precio: 7, emoji: '🍓' },
+            { id: 4, nombre: 'Naranja', precio: 4, emoji: '🍊' },
+            { id: 5, nombre: 'Piña', precio: 8, emoji: '🍍' },
+            { id: 6, nombre: 'Sandía', precio: 10, emoji: '🍉' },
+            { id: 7, nombre: 'Cereza', precio: 6, emoji: '🍒' },
+            { id: 8, nombre: 'Limón', precio: 2, emoji: '🍋' },
+        ];
+
+        // Funciones de pestañas
+        function cambiarTab(tab) {
+            document.getElementById('calculadora').classList.remove('active');
+            document.getElementById('tienda').classList.remove('active');
+            document.getElementById(tab).classList.add('active');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
+            });
+            
+            event.target.classList.remove('inactive');
+            event.target.classList.add('active');
+
+            if (tab === 'tienda') {
+                inicializarTienda();
+            }
+        }
+
+        // Funciones Calculadora
+        function agregarNumero(num) {
+            if (display === '0' || ultimoResultado !== null) {
+                display = num.toString();
+                if (ultimoResultado !== null) {
+                    operacionCompleta = '';
+                    ultimoResultado = null;
+                }
+            } else {
+                display += num;
+            }
+            actualizarDisplay();
+        }
+
+        function suma() {
+            agregarOperacion('+');
+        }
+
+        function restar() {
+            agregarOperacion('-');
+        }
+
+        function multiplicar() {
+            agregarOperacion('×');
+        }
+
+        function agregarOperacion(op) {
+            if (display !== '') {
+                operacionCompleta += display + ' ' + op + ' ';
+                display = '';
+                ultimoResultado = null;
+                actualizarDisplay();
+            }
+        }
+
+        function calcular() {
+            if (display !== '' && operacionCompleta !== '') {
+                operacionCompleta += display;
+                
+                try {
+                    // Convertir × a * para evaluar
+                    let expresion = operacionCompleta.replace(/×/g, '*');
+                    let resultado = eval(expresion);
+                    
+                    document.getElementById('mensaje').innerHTML = '✨ ¡Correcto! ✨';
+                    document.getElementById('mensaje').classList.add('correcto');
+                    
+                    ultimoResultado = resultado;
+                    display = resultado.toString();
+                    
+                    puntos += 10;
+                    document.getElementById('puntos').textContent = puntos;
+                    
+                    setTimeout(() => {
+                        document.getElementById('mensaje').innerHTML = '';
+                        document.getElementById('mensaje').classList.remove('correcto');
+                    }, 2000);
+                } catch (e) {
+                    display = 'Error';
+                    operacionCompleta = '';
+                }
+            }
+            actualizarDisplay();
+        }
+
+        function limpiar() {
+            display = '0';
+            operacionCompleta = '';
+            ultimoResultado = null;
+            document.getElementById('mensaje').innerHTML = '';
+            actualizarDisplay();
+        }
+
+        function actualizarDisplay() {
+            document.getElementById('display').textContent = display || '0';
+            document.getElementById('operacionDisplay').textContent = operacionCompleta;
+        }
+
+        // Funciones Tienda
+        function inicializarTienda() {
+            const grid = document.getElementById('productosGrid');
+            grid.innerHTML = '';
+            productos.forEach(producto => {
+                const div = document.createElement('div');
+                div.className = 'producto';
+                div.innerHTML = `
+                    <div class="producto-emoji">${producto.emoji}</div>
+                    <div class="producto-nombre">${producto.nombre}</div>
+                    <div class="producto-precio">Bs. ${producto.precio}</div>
+                    <button class="btn-agregar" onclick="agregarAlCarrito(${producto.id})">Agregar</button>
+                `;
+                grid.appendChild(div);
+            });
+            actualizarCarrito();
+        }
+
+        function agregarAlCarrito(id) {
+            const producto = productos.find(p => p.id === id);
+            const itemExistente = carrito.find(item => item.id === id);
+
+            if (itemExistente) {
+                itemExistente.cantidad++;
+            } else {
+                carrito.push({ ...producto, cantidad: 1 });
+            }
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            const cartItems = document.getElementById('cartItems');
+            const totalPrecio = document.getElementById('totalPrecio');
+
+            if (carrito.length === 0) {
+                cartItems.innerHTML = '<div class="carrito-vacio">Tu carrito está vacío 🛒</div>';
+                totalPrecio.textContent = 'Bs. 0';
+                return;
+            }
+
+            cartItems.innerHTML = carrito.map(item => `
+                <div class="carrito-item">
+                    <div class="item-nombre">${item.emoji} ${item.nombre}</div>
+                    <div>Precio: Bs. ${item.precio}</div>
+                    <div class="item-cantidad">
+                        <button class="cantidad-btn" onclick="cambiarCantidad(${item.id}, ${item.cantidad - 1})">-</button>
+                        <input type="number" class="cantidad-input" value="${item.cantidad}" onchange="cambiarCantidadInput(${item.id}, this.value)">
+                        <button class="cantidad-btn" onclick="cambiarCantidad(${item.id}, ${item.cantidad + 1})">+</button>
+                    </div>
+                    <div>Subtotal: Bs. ${item.precio * item.cantidad}</div>
+                    <button class="btn-eliminar" onclick="eliminarDelCarrito(${item.id})">Eliminar</button>
+                </div>
+            `).join('');
+
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            totalPrecio.textContent = `Bs. ${total}`;
+        }
+
+        function cambiarCantidad(id, cantidad) {
+            if (cantidad <= 0) {
+                eliminarDelCarrito(id);
+            } else {
+                const item = carrito.find(p => p.id === id);
+                if (item) {
+                    item.cantidad = cantidad;
+                    actualizarCarrito();
+                }
+            }
+        }
+
+        function cambiarCantidadInput(id, cantidad) {
+            cambiarCantidad(id, parseInt(cantidad) || 1);
+        }
+
+        function eliminarDelCarrito(id) {
+            carrito = carrito.filter(item => item.id !== id);
+            actualizarCarrito();
+        }
+
+        function comprar() {
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            if (carrito.length === 0) {
+                alert('¡Tu carrito está vacío! Agrega algunos productos primero.');
+            } else {
+                alert(`¡Compra realizada! Total: Bs. ${total}\n¡Gracias por tu compra! 🎉`);
+                carrito = [];
+                actualizarCarrito();
+            }
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            actualizarDisplay();
+        });
+    </script>
+</body>
+</html>
